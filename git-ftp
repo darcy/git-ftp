@@ -505,7 +505,8 @@ remote_lock
 
 # Changing internal field separator, file names could have spaces
 OIFS="${IFS}"
-NIFS=`echo '\n$'`
+# NIFS=`echo '\n$'`
+NIFS=$'\n'
 IFS="${NIFS}"
 
 # Upload to ftp
