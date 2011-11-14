@@ -364,12 +364,21 @@ fi
 
 # Check if the git working dir is dirty, except for show action
 if [ "${ACTION}" != "show" ]; then
-    CLEAN_REPO=`git status -uno | egrep "nothing to commit*" | wc -l`
-    if [ ${CLEAN_REPO} -ne 1 ]; then
-        write_error "Dirty repository: Having uncommitted changes. Exiting..."
-        release_lock
-        exit 1
-    fi
+  if [ `git --version | egrep "git version 1.5.4" | wc -l` -eq 1 ]; then #older version doesn't support -uno
+     DIRTY_REPO=`${GIT_BIN} update-index --refresh | wc -l ` 
+     if [ ${DIRTY_REPO} -eq 1 ]; then 
+       CLEAN_REPO=0
+     else
+       CLEAN_REPO=1
+     fi
+  else
+     CLEAN_REPO=`git status -uno | egrep "nothing to commit*" | wc -l` 
+  fi
+  if [ ${CLEAN_REPO} -ne 1 ]; then
+      write_error "Dirty repository: Having uncommitted changes. Exiting..."
+      release_lock
+      exit 1
+  fi
 fi
 
 # Split host from url
